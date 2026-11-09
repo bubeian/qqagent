@@ -1,0 +1,27 @@
+# 运行时数据与用户内容（不要提交）
+qqagent-0.4/data/
+qqagent-0.4/node_modules/
+qqagent-0.4/.git/
+
+# 用户自己的 QQ 副本（腾讯 QQ 本体，不可分发）
+qq-nt/
+
+# 下载得到的语音模型与生成目录
+tts/
+tts-runtime/models/
+tts-runtime/temp/
+
+# NapCat 运行产物（登录记录、二维码、缓存、日志）
+napcat-shell/config/
+napcat-shell/cache/
+napcat-shell/logs/
+napcat-shell/temp/
+napcat-shell/guild1.db*
+**/temp/
+
+# 杂项
+*.log
+*.log.err
+*.lock
+*.bak-*
+conout.tmp

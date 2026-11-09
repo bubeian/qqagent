@@ -1,0 +1,17 @@
+{
+  "host": "127.0.0.1",
+  "port": 8080,
+  "backend": "vulkan",
+  "device": 0,
+  "lazy_load": false,
+  "max_loaded_models": 1,
+  "models": [
+    {
+      "id": "indextts",
+      "family": "index_tts2",
+      "path": "D:/qqagent/tts/models/index-tts2_5-q8_0.gguf",
+      "task": "clon",
+      "mode": "offline"
+    }
+  ]
+}

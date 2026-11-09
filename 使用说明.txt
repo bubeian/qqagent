@@ -1,0 +1,88 @@
+QQ Agent 懒人包（2026-11-09）
+=====================================
+
+一、这是什么
+  整包解压即可运行，不依赖 C 盘、不依赖已安装的 Node。
+  所有路径都是相对本目录的相对路径，整个文件夹可以搬到别的盘 / 别的电脑。
+
+  ★ 默认使用「本地客户端界面」：双击 启动QQAgent.bat，会出现 QQ Agent 自己的
+    桌面窗口（Electron），不需要浏览器。
+
+二、目录结构
+  qqagent\                        ← 包根目录（随便改名、随便搬）
+  ├─ 启动QQAgent.bat              ← 【默认】本地客户端（桌面窗口）
+  ├─ 启动QQAgent-网页模式.bat      ← 调试用：无窗口服务 + 浏览器打开
+  ├─ 使用说明.txt                 ← 本文件
+  ├─ napcat-shell\                ← NapCat 协议端（QQ 机器人底座）
+  │   └─ config\                  ← 首次运行后自动生成（登录记录在这里）
+  ├─ qq-nt\                       ← 【可选】首次启动选"下载"后才会生成
+  └─ qqagent-0.4\                 ← QQ Agent 主程序
+      ├─ node_modules\            ← 已含 electron 33.2.0，不用 npm install
+      ├─ data\                    ← 配置、会话、记忆都在这（可随时删）
+      └─ scripts\                 ← NapCat 计划任务相关脚本
+
+三、两种启动方式
+  · 启动QQAgent.bat（推荐）
+      拉起 Electron 桌面客户端，托盘常驻、关窗不退出。
+      QQ Agent 自己会启动 NapCat（首次弹一次 UAC 建计划任务）。
+
+  · 启动QQAgent-网页模式.bat（仅调试）
+      只跑后端服务（无窗口），然后自动用浏览器打开 http://127.0.0.1:3210。
+      用来排错/看接口，不建议日常使用。
+
+  两者用的是同一份数据和同一套界面，不要同时开（会抢 3210 端口，
+  后启动的那个会自动顺延到 3211）。
+
+四、首次启动的「使用须知」
+  第一次打开（客户端或网页版都会）会弹窗问：是否下载独立QQ。
+
+  · 点「下载」（白底蓝字）
+      把系统 QQ 的程序体复制一份到 qq-nt\（约 1.2 GB），机器人只用这一份。
+      你可以一边用大号聊天，一边让机器人挂小号。
+      代价：磁盘 +1.2 GB，内存 +350~900 MB。
+
+  · 点「不下载」（白底红字，图标斜切）
+      机器人直接用系统 QQ。因为 QQ 是单实例的，每次启动机器人会先关掉
+      所有 QQ（包括你正在用的）。适合只跑机器人、不挂个人 QQ 的机器。
+
+  选择结果写在 qqagent-0.4\data\config.json 的 napcat 段。
+  之后想再改：点顶部「下载独立QQ」按钮，随时能重新打开这个弹窗。
+
+五、首次使用流程
+  1. 双击「启动QQAgent.bat」
+  2. 首次启动会弹一次 UAC（管理员确认）——创建 QQAgent-NapCat 计划任务，
+     之后每次启动 NapCat 都不再弹窗
+  3. 按提示选择是否下载独立QQ
+  4. 客户端窗口里，右上角「账号」头像 → 扫码登录 QQ
+  5. 登录后 OneBot（3000/3001）会自动配置好；如果 60 秒内还没连上，
+     看 qqagent-0.4\data\boot-diag.log 里以 [napcat] 开头的行
+
+六、端口
+  QQ Agent 控制台   3210（被占用会自动顺延 3211、3212…）
+  NapCat WebUI      6099
+  OneBot WS         3001
+  OneBot HTTP       3000
+  TTS（如另装）      8080
+
+七、换电脑 / 搬目录
+  整个 qqagent 文件夹拷走即可。
+  注意：QQAgent-NapCat 计划任务里存的是"创建时"的绝对路径，
+  换目录后执行一次下面的命令重建（管理员）：
+    schtasks /delete /tn "QQAgent-NapCat" /f
+  然后重新双击「启动QQAgent.bat」，它会自动按新路径重建。
+
+八、管理员相关
+  查看任务：schtasks /query /tn "QQAgent-NapCat" /v /fo LIST
+  立即启动：schtasks /run   /tn "QQAgent-NapCat"
+  删除任务：schtasks /delete /tn "QQAgent-NapCat" /f
+
+九、常见问题
+  · 双击没反应：先确认 qqagent-0.4\node_modules\electron\dist\electron.exe 存在。
+  · 提示 electron is missing：说明包不完整，重新解压。
+  · 客户端窗口白屏：多半是 3210 端口被别的进程占了，关掉重复实例再试。
+  · 扫码登录成功但 OneBot 连不上：程序会自动补 3000/3001 配置；
+    若仍失败，重启一次 NapCat（关掉 QQ 后重跑启动器）。
+  · 下载独立QQ失败：确认磁盘剩余 >2 GB；也可手动把系统 QQ 目录
+    （不含 Tencent Files）复制成 qq-nt，效果一样。
+  · NapCat 提示 token 失效：在 qqagent-0.4\data\napcat.json 里写
+    {"token":"当前token"} 覆盖（token 见 napcat-shell\config\webui.json）。
